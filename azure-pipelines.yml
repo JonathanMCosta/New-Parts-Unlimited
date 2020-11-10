@@ -18,12 +18,12 @@ stages:
   jobs:
   - job: Build
     steps:
-    - script: "Hello"
-    # - task: DotNetCoreCLI@2
-    #   displayName: Restore
-    #   inputs:
-    #     command: restore
-    #     projects: '**/*.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
+
     # - task: DotNetCoreCLI@2
     #   displayName: Build
     #   inputs:
