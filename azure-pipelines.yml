@@ -58,6 +58,8 @@ stages:
     #Your build pipeline references an undefined variable named ‘Parameters.ConnectedServiceName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
     #Your build pipeline references an undefined variable named ‘Parameters.WebAppKind’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
     #Your build pipeline references an undefined variable named ‘Parameters.WebAppName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+    - download: current
+      artifact: drop
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy Azure App Service'
       inputs:
@@ -65,4 +67,4 @@ stages:
         azureSubscription: 'esx - Sub'
         appType: 'webApp'
         WebAppName: 'devnewpartsunlimited-mdo'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
