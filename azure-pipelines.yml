@@ -5,19 +5,18 @@
 
 trigger:
 - terraform
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
 
 stages:
-- stage: CI
-  pool:
-    name: Azure Pipelines
-    vmImage: 'windows-latest'
-  
+- stage: CI 
 
+  variables:
+    BuildConfiguration : 'Release'
 
   jobs:
   - job: Build
-  variables:
-    BuildConfiguration : 'Release'
     steps:
     - task: DotNetCoreCLI@2
       displayName: Restore
