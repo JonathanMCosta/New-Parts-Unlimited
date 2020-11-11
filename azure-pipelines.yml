@@ -47,10 +47,10 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-# - stage: DEV
-#   pool:
-#     name: Azure Pipelines
-#     vmImage: 'windows-latest'
+- stage: DEV
+  pool:
+    name: Azure Pipelines
+    vmImage: 'windows-latest'
   
-#   jobs:
-#   - job: Deploy
+  jobs:
+  - job: Deploy
