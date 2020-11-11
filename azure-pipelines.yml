@@ -12,11 +12,12 @@ stages:
     name: Azure Pipelines
     vmImage: 'windows-latest'
   
-    variables:
-      BuildConfiguration : 'Release'
+
 
   jobs:
   - job: Build
+  variables:
+    BuildConfiguration : 'Release'
     steps:
     - task: DotNetCoreCLI@2
       displayName: Restore
@@ -46,3 +47,11 @@ stages:
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
+
+# - stage: DEV
+#   pool:
+#     name: Azure Pipelines
+#     vmImage: 'windows-latest'
+  
+#   jobs:
+#   - job: Deploy
