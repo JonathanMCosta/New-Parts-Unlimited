@@ -21,75 +21,80 @@ stages:
   jobs:
   - job: Build
     steps:
-    - task: DotNetCoreCLI@2
-      displayName: Restore
+    # - task: DotNetCoreCLI@2
+    #   displayName: Restore
+    #   inputs:
+    #     command: restore
+    #     projects: '**/*.csproj'
+    # - task: DotNetCoreCLI@2
+    #   displayName: Build
+    #   inputs:
+    #     projects: '**/*.csproj'
+    #     arguments: '--configuration $(BuildConfiguration)'
+    # - task: DotNetCoreCLI@2
+    #   displayName: Test
+    #   inputs:
+    #     command: test
+    #     projects: '**/*[Tt]ests/*.csproj'
+    #     arguments: '--configuration $(BuildConfiguration)'
+    # - task: DotNetCoreCLI@2
+    #   displayName: Publish
+    #   inputs:
+    #     command: publish
+    #     publishWebProjects: True
+    #     arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+    #     zipAfterPublish: True
+    - task: CopyFiles@2
+      displayName: 'Copy Terraform files to artifacts'
       inputs:
-        command: restore
-        projects: '**/*.csproj'
-    - task: DotNetCoreCLI@2
-      displayName: Build
-      inputs:
-        projects: '**/*.csproj'
-        arguments: '--configuration $(BuildConfiguration)'
-    - task: DotNetCoreCLI@2
-      displayName: Test
-      inputs:
-        command: test
-        projects: '**/*[Tt]ests/*.csproj'
-        arguments: '--configuration $(BuildConfiguration)'
-    - task: DotNetCoreCLI@2
-      displayName: Publish
-      inputs:
-        command: publish
-        publishWebProjects: True
-        arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
-        zipAfterPublish: True
+        SourceFolder: Terraform
+        TargetFolder: '$(build.artifactstagingdirectory)/Terraform'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact'
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-- stage: dev
-  pool:
-    name: Azure Pipelines
-    vmImage: 'windows-latest'
+# - stage: dev
+#   pool:
+#     name: Azure Pipelines
+#     vmImage: 'windows-latest'
   
-  jobs:
-  - job: Deploy
-    steps:
-    #Your build pipeline references an undefined variable named ‘Parameters.ConnectedServiceName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-    #Your build pipeline references an undefined variable named ‘Parameters.WebAppKind’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-    #Your build pipeline references an undefined variable named ‘Parameters.WebAppName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-    - download: current
-      artifact: drop
-    - task: AzureRmWebAppDeployment@4
-      displayName: 'Deploy Azure App Service'
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'esx - Sub'
-        appType: 'webApp'
-        WebAppName: '$(System.StageDisplayName)newpartsunlimited-mdo'
-        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+#   jobs:
+#   - job: Deploy
+#     steps:
+#     #Your build pipeline references an undefined variable named ‘Parameters.ConnectedServiceName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#     #Your build pipeline references an undefined variable named ‘Parameters.WebAppKind’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#     #Your build pipeline references an undefined variable named ‘Parameters.WebAppName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#     - download: current
+#       artifact: drop
+#     - task: AzureRmWebAppDeployment@4
+#       displayName: 'Deploy Azure App Service'
+#       inputs:
+#         ConnectionType: 'AzureRM'
+#         azureSubscription: 'esx - Sub'
+#         appType: 'webApp'
+#         WebAppName: '$(System.StageDisplayName)newpartsunlimited-mdo'
+#         packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
-- stage: hmg
-  pool:
-    name: Azure Pipelines
-    vmImage: 'windows-latest'
+# - stage: hmg
+#   pool:
+#     name: Azure Pipelines
+#     vmImage: 'windows-latest'
   
-  jobs:
-  - job: Deploy
-    steps:
-    #Your build pipeline references an undefined variable named ‘Parameters.ConnectedServiceName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-    #Your build pipeline references an undefined variable named ‘Parameters.WebAppKind’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-    #Your build pipeline references an undefined variable named ‘Parameters.WebAppName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-    - download: current
-      artifact: drop
-    - task: AzureRmWebAppDeployment@4
-      displayName: 'Deploy Azure App Service'
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'esx - Sub'
-        appType: 'webApp'
-        WebAppName: '$(System.StageDisplayName)newpartsunlimited-mdo'
-        packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+#   jobs:
+#   - job: Deploy
+#     steps:
+#     #Your build pipeline references an undefined variable named ‘Parameters.ConnectedServiceName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#     #Your build pipeline references an undefined variable named ‘Parameters.WebAppKind’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#     #Your build pipeline references an undefined variable named ‘Parameters.WebAppName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#     - download: current
+#       artifact: drop
+#     - task: AzureRmWebAppDeployment@4
+#       displayName: 'Deploy Azure App Service'
+#       inputs:
+#         ConnectionType: 'AzureRM'
+#         azureSubscription: 'esx - Sub'
+#         appType: 'webApp'
+#         WebAppName: '$(System.StageDisplayName)newpartsunlimited-mdo'
+#         packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
