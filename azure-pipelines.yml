@@ -9,6 +9,9 @@ pool:
   name: Azure Pipelines
   vmImage: 'windows-latest'
 
+variables: 
+  name: 
+
 stages:
 - stage: CI 
 
@@ -47,7 +50,7 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-- stage: DEV
+- stage: dev
   pool:
     name: Azure Pipelines
     vmImage: 'windows-latest'
@@ -66,10 +69,10 @@ stages:
         ConnectionType: 'AzureRM'
         azureSubscription: 'esx - Sub'
         appType: 'webApp'
-        WebAppName: 'devnewpartsunlimited-mdo'
+        WebAppName: '$(System.StageDisplayName)newpartsunlimited-mdo'
         packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
-- stage: HMG
+- stage: hmg
   pool:
     name: Azure Pipelines
     vmImage: 'windows-latest'
@@ -88,5 +91,5 @@ stages:
         ConnectionType: 'AzureRM'
         azureSubscription: 'esx - Sub'
         appType: 'webApp'
-        WebAppName: 'hmgnewpartsunlimited-mdo'
+        WebAppName: '$(System.StageDisplayName)newpartsunlimited-mdo'
         packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
