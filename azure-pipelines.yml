@@ -62,7 +62,9 @@ stages:
   
   variables:
     terraformstoragerg: 'terraformrg'
-    terraformstorageaccount: 'terraformstorage8323a84e'  
+    terraformstorageaccount: 'terraformstorage8323a84e'
+    appservicename: 'pulterraformweb8323a84e'
+    appserviceplan: 'PULTerraformplan'
 
   jobs:
   - job: Deploy
@@ -101,6 +103,23 @@ stages:
         escapeType: none
         tokenPrefix: '__'
         tokenSuffix: '__'
+
+    # - task: TerraformInstaller@0
+    #   inputs:
+    #     terraformVersion: '0.12.3'
+
+    # - task: TerraformTaskV1@0
+    #   inputs:
+    #     provider: 'azurerm'
+    #     command: 'init'
+    #     workingDirectory: '$(System.DefaultWorkingDirectory)/_Terraform-CI/drop/Terraform'
+    #     backendServiceArm: 'esx'
+    #     backendAzureRmResourceGroupName: '$(terraformstoragerg)'
+    #     backendAzureRmStorageAccountName: '$(terraformstorageaccount)'
+    #     backendAzureRmContainerName: 'terraform'
+    #     backendAzureRmKey: 'terraform.tfstate'
+
+
 
 
 #     - task: AzureRmWebAppDeployment@4
