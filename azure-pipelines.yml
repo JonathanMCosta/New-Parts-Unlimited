@@ -55,19 +55,45 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-# - stage: dev
-#   pool:
-#     name: Azure Pipelines
-#     vmImage: 'windows-latest'
+- stage: dev
+  pool:
+    name: Azure Pipelines
+    vmImage: 'windows-latest'
   
-#   jobs:
-#   - job: Deploy
-#     steps:
-#     #Your build pipeline references an undefined variable named ‘Parameters.ConnectedServiceName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#     #Your build pipeline references an undefined variable named ‘Parameters.WebAppKind’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#     #Your build pipeline references an undefined variable named ‘Parameters.WebAppName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
-#     - download: current
-#       artifact: drop
+  variables:
+    terraformstoragerg: 'terraformrg'
+    terraformstorageaccount: 'terraformstorage8323a84e'  
+
+  jobs:
+  - job: Deploy
+    steps:
+    #Your build pipeline references an undefined variable named ‘Parameters.ConnectedServiceName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+    #Your build pipeline references an undefined variable named ‘Parameters.WebAppKind’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+    #Your build pipeline references an undefined variable named ‘Parameters.WebAppName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+    - download: current
+      artifact: drop
+    - task: AzureCLI@1
+      displayName: 'Azure CLI to deploy required Azure resources'
+      inputs:
+        azureSubscription: esx
+        scriptLocation: inlineScript
+        inlineScript: |
+          # this will create Azure resource group
+          call az group create --location westus --name $(terraformstoragerg)
+          call az storage account create --name $(terraformstorageaccount) --resource-group $(terraformstoragerg) --location westus --sku Standard_LRS
+          call az storage container create --name terraform --account-name $(terraformstorageaccount)
+          call az storage account keys list -g $(terraformstoragerg) -n $(terraformstorageaccount)
+    - task: AzurePowerShell@3
+      displayName: 'Azure PowerShell script to get the storage key'
+      inputs:
+        azureSubscription: esx
+        ScriptType: InlineScript
+        Inline: |
+          # Using this script we will fetch storage key which is required in terraform file to authenticate backend storage account     
+          $key=(Get-AzureRmStorageAccountKey -ResourceGroupName $(terraformstoragerg) -AccountName $(terraformstorageaccount)).Value[0]
+          Write-Host "##vso[task.setvariable variable=storagekey]$key"
+        azurePowerShellVersion: LatestVersion
+
 #     - task: AzureRmWebAppDeployment@4
 #       displayName: 'Deploy Azure App Service'
 #       inputs:
