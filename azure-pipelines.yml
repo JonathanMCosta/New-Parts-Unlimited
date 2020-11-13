@@ -94,6 +94,15 @@ stages:
           Write-Host "##vso[task.setvariable variable=storagekey]$key"
         azurePowerShellVersion: 'LatestVersion'
 
+    - task: replacetokens@3
+      displayName: Replace tokens in terraform file
+      inputs:
+        targetFiles: '**/*.tf'
+        escapeType: none
+        tokenPrefix: '__'
+        tokenSuffix: '__'
+
+
 #     - task: AzureRmWebAppDeployment@4
 #       displayName: 'Deploy Azure App Service'
 #       inputs:
