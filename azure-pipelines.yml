@@ -65,6 +65,7 @@ stages:
     terraformstorageaccount: 'terraformstorage8323a84e'
     appservicename: 'pulterraformweb8323a84e'
     appserviceplan: 'PULTerraformplan'
+    storagekey: 'PipelineWillGetThisValueRuntime'
 
   jobs:
   - job: Deploy
@@ -95,7 +96,6 @@ stages:
           $key=(Get-AzureRmStorageAccountKey -ResourceGroupName $(terraformstoragerg) -AccountName $(terraformstorageaccount)).Value[0]
           Write-Host "##vso[task.setvariable variable=storagekey]$key"
         azurePowerShellVersion: 'LatestVersion'
-
     - task: replacetokens@3
       displayName: Replace tokens in terraform file
       inputs:
@@ -103,24 +103,34 @@ stages:
         escapeType: none
         tokenPrefix: '__'
         tokenSuffix: '__'
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: '0.12.3'
+    - task: TerraformTaskV1@0
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/_Terraform-CI/drop/Terraform'
+        backendServiceArm: 'esx - Sub'
+        backendAzureRmResourceGroupName: '$(terraformstoragerg)'
+        backendAzureRmStorageAccountName: '$(terraformstorageaccount)'
+        backendAzureRmContainerName: 'terraform'
+        backendAzureRmKey: 'terraform.tfstate'
 
-    # - task: TerraformInstaller@0
-    #   inputs:
-    #     terraformVersion: '0.12.3'
+    - task: TerraformTaskV1@0
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/_Terraform-CI/drop/Terraform'
+        environmentServiceNameAzureRM: 'esx - Sub'
 
-    # - task: TerraformTaskV1@0
-    #   inputs:
-    #     provider: 'azurerm'
-    #     command: 'init'
-    #     workingDirectory: '$(System.DefaultWorkingDirectory)/_Terraform-CI/drop/Terraform'
-    #     backendServiceArm: 'esx'
-    #     backendAzureRmResourceGroupName: '$(terraformstoragerg)'
-    #     backendAzureRmStorageAccountName: '$(terraformstorageaccount)'
-    #     backendAzureRmContainerName: 'terraform'
-    #     backendAzureRmKey: 'terraform.tfstate'
-
-
-
+    - task: TerraformTaskV1@0
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/_Terraform-CI/drop/Terraform'
+        commandOptions: '-auto-approve'
+        environmentServiceNameAzureRM: 'esx - Sub'
 
 #     - task: AzureRmWebAppDeployment@4
 #       displayName: 'Deploy Azure App Service'
